@@ -1,8 +1,10 @@
-import React from 'react'
+import React from 'react';
 
 export const HomaPage = () => {
 
   return (
-    <div>HomePage</div>
+    <div>
+      HomaPage
+    </div>
   )
 }
