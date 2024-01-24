@@ -13,6 +13,9 @@ const AuthProvider = ({ children }) => {
       setUser(users);
       localStorage.setItem('user', JSON.stringify(users));
     }
+    else{
+      alert("Wrong Username Or Password")
+    }
   };
 
   const logout = () => {
@@ -31,7 +34,7 @@ const AuthProvider = ({ children }) => {
 
 const Auth = () => {
   const context = useContext(AuthContext);
-
+  
   return context;
 };
 
