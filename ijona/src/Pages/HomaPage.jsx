@@ -4,7 +4,7 @@ export const HomaPage = () => {
 
   return (
     <div>
-      HomaPage
+      HomePage
     </div>
   )
 }

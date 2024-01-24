@@ -5,15 +5,17 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './Context/AuthProvider';
-
+import { ChakraProvider } from '@chakra-ui/react'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-
-  <AuthProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </AuthProvider>
+  
+    <AuthProvider>
+      <BrowserRouter>
+      <ChakraProvider>
+        <App />
+        </ChakraProvider>
+      </BrowserRouter>
+    </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
