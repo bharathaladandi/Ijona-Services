@@ -1,50 +1,143 @@
 import React, { useContext, useState } from 'react';
 import { Auth } from '../Context/AuthProvider';
 
+import {
+  Box,
+  Button,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
+  FormControl,
+  Heading
+} from '@chakra-ui/react';
 
 export const HomaPage = () => {
 
-  const { user, logout } = Auth();
+  const { user, logout, isAuthenticated } = Auth();
 
   const [data, setData] = useState([
-    { id: 1, name: 'user 1', description: 'Description 1' },
-    { id: 2, name: 'user 2', description: 'Description 2' },
-    { id: 3, name: 'user 3', description: 'Description 3' },
-    { id: 4, name: 'user 4', description: 'Description 4' },
-    { id: 5, name: 'user 5', description: 'Description 5' },
-    { id: 6, name: 'user 6', description: 'Description 6' },
+    { id: 1, name: 'Item 1', description: 'Description 1' },
+    { id: 2, name: 'Item 2', description: 'Description 2' },
   ]);
+
+  const [dataItems, setDataitems] = useState({ name: '', description: '' });
+  const [edit, setEdit] = useState(false);
+  const [editItemId, setEditItemId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (edit) {
+      setData((prevData) =>
+        prevData.map((item) => (item.id === editItemId ? { ...item, ...dataItems } : item))
+      );
+      setEdit(false);
+      setEditItemId(null);
+    } else {
+      const maxId = Math.max(...data.map((item) => item.id), 0);
+      setData((prevData) => [...prevData, { id: maxId + 1, ...dataItems }]);
+    }
+
+    setDataitems({ name: '', description: '' });
+    closeAddModal();
+  };
+
+  const handleEdit = (id) => {
+    const selectedItem = data.find((item) => item.id === id);
+    setDataitems(selectedItem);
+    setEdit(true);
+    setEditItemId(id);
+    openAddModal();
+  };
 
   const handleDelete = (id) => {
     setData((prevData) => prevData.filter((item) => item.id !== id));
   };
+
+  const openAddModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <div>
-      <h2>Home Page</h2>
-      <p>Welcome, {user && user.username}!</p>
-      <button onClick={logout}>Logout</button>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box p={4}>
+      <Heading>Welcome, {user && user.username}!</Heading>
+      <br />
+      <Button onClick={logout} colorScheme="teal">Logout</Button>
+      <Button onClick={openAddModal} colorScheme="green" ml={4}>
+        Add
+      </Button>
+      <Table mt={4} variant="simple">
+        <Thead>
+          <Tr>
+            <Th>ID</Th>
+            <Th>Name</Th>
+            <Th>Description</Th>
+            <Th>Action</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
           {data.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.name}</td>
-              <td>{item.description}</td>
-              <td>
-                <button onClick={() => handleDelete(item.id)}>Delete</button>
-              </td>
-            </tr>
+            <Tr key={item.id}>
+              <Td>{item.id}</Td>
+              <Td>{item.name}</Td>
+              <Td>{item.description}</Td>
+              <Td>
+                <Button onClick={() => handleEdit(item.id)} colorScheme="teal">Edit</Button>
+                <Button onClick={() => handleDelete(item.id)} colorScheme="red">Delete</Button>
+              </Td>
+            </Tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </Tbody>
+      </Table>
+
+      <Modal isOpen={isModalOpen} onClose={closeAddModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{edit ? 'Edit Item' : 'Add Item'}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="Name"
+                value={dataItems.name}
+                onChange={(e) => setDataitems({ ...dataItems, name: e.target.value })}
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <Input
+                type="text"
+                placeholder="Description"
+                value={dataItems.description}
+                onChange={(e) => setDataitems({ ...dataItems, description: e.target.value })}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+              {edit ? 'Update' : 'Add'}
+            </Button>
+            <Button onClick={closeAddModal}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
   )
 }
